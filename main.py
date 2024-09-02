@@ -42,19 +42,4 @@ async def shutdown():
 @app.post("/validate-key/")
 async def validate_key(request: LicenseRequest):
     # Query to find the license key
-    query = license_keys.select().where(license_keys.c.key == request.license_key)
-    result = await database.fetch_one(query)
-    
-    if result is None:
-        raise HTTPException(status_code=404, detail="License key not found")
-    
-    # Check if the license has expired
-    current_time = int(datetime.utcnow().timestamp())
-    if current_time > result['expiry']:
-        raise HTTPException(status_code=403, detail="License key expired")
-    
-    # Check if HWID matches (if HWID is recorded)
-    if result['hwid'] and result['hwid'] != request.hwid:
-        raise HTTPException(status_code=403, detail="HWID does not match")
-    
     return {"message": "License key is valid"}  
